@@ -3,13 +3,18 @@
   <groupId>Assignment4</groupId>
   <artifactId>Assignment4</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
   <dependencies>
 	<dependency>
-    <groupId>javax.json</groupId>
-    <artifactId>javax.json-api</artifactId>
-    <version>1.1</version>
+	    <groupId>javax.json</groupId>
+	    <artifactId>javax.json-api</artifactId>
+	    <version>1.1</version>
+	</dependency>
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.json</artifactId>
+    <version>1.0.4</version>
 </dependency>
-
 
   </dependencies>
   <build>

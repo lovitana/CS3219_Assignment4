@@ -15,6 +15,7 @@ import javax.json.*;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 public class App {
 
@@ -41,6 +42,10 @@ public class App {
 	public static List<Pair<String, Integer>> findWithMostAttr(String ref, String att, String value, int n) {
 		Map<String, Integer> count = new HashMap<>();
 		while (parser.hasNext()) {
+			Event e = parser.next();
+			if (e != Event.START_OBJECT) {
+				continue;
+			}
 			JsonObject publication = parser.getObject();
 			if (getAttributes(publication, att).contains(value)) {
 				for (String reference : getAttributes(publication, ref)) {
