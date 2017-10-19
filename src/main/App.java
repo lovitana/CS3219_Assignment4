@@ -21,11 +21,18 @@ public class App {
 	private static JsonParser parser;
 
 	public static void main(String[] args) {
-		try (InputStream input = new FileInputStream("src/resources/extractedData.json")) {
+		try (InputStream input = new FileInputStream("src/resources/extractedDataModified.json")) {
 			parser = Json.createParser(input);
 			// TODO switch arg[0] to call the right function with arguments
 			// arg[1..n] (and maybe a file.csv)
 			// TODO remove
+			/*while(parser.hasNext()){
+				Event e= parser.next();
+				System.out.println(e);
+				if(e==Event.KEY_NAME || e==Event.VALUE_STRING){
+					System.out.println(parser.getString());
+				}
+			}*/
 			System.out.println("Q1:");
 			List<Pair<String, Integer>> l = findWithMostAttr("author", "venue", "arXiv", 10);
 			System.out.println(l.toString());
@@ -140,8 +147,6 @@ public class App {
 										ids.add(parser.getString());
 									}
 									if(ids.size()==prevSize){ ids.add(null);}
-									//FIXME delete this
-									if(ids.size()-prevSize>1){ System.out.println("warning 2 ids");}
 									break;
 								case "name":
 									parser.next();
