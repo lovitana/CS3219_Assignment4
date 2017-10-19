@@ -1,3 +1,4 @@
+package main;
 public class Pair<T,P>{
 	public T el1;
 	public P el2;
