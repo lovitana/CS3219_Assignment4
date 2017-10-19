@@ -15,9 +15,14 @@ public class ModifyFile {
 			String line = null;
 			bw.write("[");
 			line=input.readLine();
-			bw.write(line+"\n");
+			bw.write(line);
 			while((line=input.readLine()) != null){
-				bw.write(",\n"+line);
+				if(!line.isEmpty() && line.charAt(0)=='{'){
+					bw.write(","+line);
+				}else{
+					bw.write(line);
+					System.out.println(line);
+				}
 			}
 			bw.write("]");
 		}catch (FileNotFoundException e) {
