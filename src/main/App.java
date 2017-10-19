@@ -30,7 +30,7 @@ public class App {
 	private static JsonParser parser;
 
 	public static void main(String[] args) {
-		try (InputStream input = new FileInputStream("src/resources/sampleDataModified.json")) {
+		try (InputStream input = new FileInputStream("src/resources/dataModified.json")) {
 			parser = Json.createParser(input);
 			if(args.length ==0){
 				throw new IllegalArgumentException("Wrong number of arguments");

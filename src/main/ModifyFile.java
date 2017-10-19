@@ -10,8 +10,8 @@ import java.io.IOException;
 public class ModifyFile {
 
 	public static void main(String[] args) {
-		try (BufferedReader input = new BufferedReader(new FileReader("src/resources/sampleData.json"));
-				BufferedWriter bw = new BufferedWriter(new FileWriter("src/resources/sampleDataModified.json"));) {
+		try (BufferedReader input = new BufferedReader(new FileReader("src/resources/data.json"));
+				BufferedWriter bw = new BufferedWriter(new FileWriter("src/resources/dataModified.json"));) {
 			String line = null;
 			bw.write("[");
 			line=input.readLine();
