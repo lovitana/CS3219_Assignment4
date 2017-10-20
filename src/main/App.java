@@ -21,7 +21,7 @@ import javax.json.stream.JsonParser.Event;
  * Q1: top name venue arXiv 10 
  * findWithMostAttr("name", "venue", "arXiv", 10);
  * 
- * Q2:
+ * Q2: top title venue arXiv 5 inCitations
  * 
  * 
  */
@@ -39,13 +39,19 @@ public class App {
 			// arg[1..n] (and maybe a file.csv)
 			switch(args[0]){
 			case "top":
-				if(args.length != 5){
-					throw new IllegalArgumentException("Wrong number of arguments");
-				}
+				if(args.length ==5){
 				List<Pair<String, Integer>> l = findWithMostAttr(args[1], args[2], args[3],Integer.parseInt(args[4]));
 				System.out.println(args[1] + "," + "count");
 				for(Pair<String,Integer> p:l){
 					System.out.println(p.el1 +","+p.el2 );
+				}
+				}
+				if(args.length ==6){
+					List<Pair<String, Integer>> l = findTop(args[1], args[2], args[3],args[5],Integer.parseInt(args[4]));
+					System.out.println(args[1] + "," + "count");
+					for(Pair<String,Integer> p:l){
+						System.out.println(p.el1 +","+p.el2 );
+					}
 				}
 			
 			}
@@ -61,18 +67,23 @@ public class App {
 	}
 
 	public static List<Pair<String, Integer>> findWithMostAttr(String ref, String att, String value, int n) {
+		return findTop(ref, att, value, "", n);
+	}
+	
+	
+	public static List<Pair<String, Integer>> findTop(String ref, String conditionAtt, String value,String countAtt, int n){
 		Map<String, Integer> count = new HashMap<>();
 		Map<String,List<String>> object;
 		while ((object = nextPublication()) != null) {
 			boolean check = false;
-			for(String attValue:object.getOrDefault(att,Collections.emptyList())){
+			for(String attValue:object.getOrDefault(conditionAtt,Collections.emptyList())){
 				if(attValue.contains(value)){
 					check = true;
 				}
 			}
 			if(check){
 				for(String refValue:object.getOrDefault(ref, Collections.emptyList())){
-					count.put(refValue, count.getOrDefault(refValue, 0)+1);
+					count.put(refValue, count.getOrDefault(refValue, 0)+object.getOrDefault(countAtt, Collections.emptyList()).size());
 				}
 			}
 			
@@ -114,6 +125,7 @@ public class App {
 	 * "this attribute doesn't exist"); } } catch (NullPointerException e) {
 	 * return Collections.emptyList(); } }
 	 */
+	
 	
 
 	private static Map<String, List<String>> nextPublication() {
