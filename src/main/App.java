@@ -43,9 +43,9 @@ public class App {
 					throw new IllegalArgumentException("Wrong number of arguments");
 				}
 				List<Pair<String, Integer>> l = findWithMostAttr(args[1], args[2], args[3],Integer.parseInt(args[4]));
-				System.out.println(args[1]+" , number of citations with "+ args[2]+"="+args[3]);
+				System.out.println(args[1] + "," + "count");
 				for(Pair<String,Integer> p:l){
-					System.out.println(p.el1 +" ,"+p.el2 );
+					System.out.println(p.el1 +","+p.el2 );
 				}
 			
 			}
@@ -82,7 +82,7 @@ public class App {
 		TreeSet<Entry<String, Integer>> top = new TreeSet<>(comp2);
 		top.addAll(count.entrySet());
 		List<Pair<String, Integer>> result = new ArrayList<>();
-		int c = 0;
+		int c = 1;
 		for (Entry<String, Integer> ent : top) {
 			if (c > n) {
 				return result;
