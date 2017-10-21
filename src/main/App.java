@@ -1,10 +1,12 @@
 
 package main;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,9 +19,9 @@ import javax.json.Json;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-/**ARGS
- * Q1: top name venue arXiv 10 
- * findWithMostAttr("name", "venue", "arXiv", 10);
+/**
+ * ARGS Q1: top name venue arXiv 10 findWithMostAttr("name", "venue", "arXiv",
+ * 10);
  * 
  * Q2: top title venue arXiv 5 inCitations
  * 
@@ -32,30 +34,38 @@ public class App {
 	public static void main(String[] args) {
 		try (InputStream input = new FileInputStream("src/resources/dataModified.json")) {
 			parser = Json.createParser(input);
-			if(args.length ==0){
+			if (args.length == 0) {
 				throw new IllegalArgumentException("Wrong number of arguments");
 			}
 			// TODO switch arg[0] to call the right function with arguments
 			// arg[1..n] (and maybe a file.csv)
-			switch(args[0]){
+			switch (args[0]) {
 			case "top":
-				if(args.length ==5){
-				List<Pair<String, Integer>> l = findWithMostAttr(args[1], args[2], args[3],Integer.parseInt(args[4]));
-				System.out.println(args[1] + "," + "count");
-				for(Pair<String,Integer> p:l){
-					System.out.println(p.el1 +","+p.el2 );
-				}
-				}
-				if(args.length ==6){
-					List<Pair<String, Integer>> l = findTop(args[1], args[2], args[3],args[5],Integer.parseInt(args[4]));
+				if (args.length == 5) {
+					List<Pair<String, Integer>> l = findWithMostAttr(args[1], args[2], args[3],
+							Integer.parseInt(args[4]));
 					System.out.println(args[1] + "," + "count");
-					for(Pair<String,Integer> p:l){
-						System.out.println(p.el1 +","+p.el2 );
+					for (Pair<String, Integer> p : l) {
+						System.out.println(p.el1 + "," + p.el2);
 					}
 				}
-			
+				if (args.length == 6) {
+					List<Pair<String, Integer>> l = findTop(args[1], args[2], args[3], args[5],
+							Integer.parseInt(args[4]));
+					System.out.println(args[1] + "," + "count");
+					for (Pair<String, Integer> p : l) {
+						System.out.println(p.el1 + "," + p.el2);
+					}
+				}
+				break;
+			case "test":
+				List<String> l = new ArrayList<>();
+				l.add("authors");
+				l.add("nbCit");
+				findGeneric(new HashMap<>(), Combinator.count("title","inCitations"), Filter.contain("venue", "ArXiv")
+						, Finalizer.printTop(10).addAtt(l));
 			}
-			
+
 			parser.close();
 		} catch (FileNotFoundException e) {
 			parser.close();
@@ -69,27 +79,29 @@ public class App {
 	public static List<Pair<String, Integer>> findWithMostAttr(String ref, String att, String value, int n) {
 		return findTop(ref, att, value, "", n);
 	}
-	
-	
-	public static List<Pair<String, Integer>> findTop(String ref, String conditionAtt, String value,String countAtt, int n){
+
+	public static List<Pair<String, Integer>> findTop(String ref, String conditionAtt, String value, String countAtt,
+			int n) {
 		Map<String, Integer> count = new HashMap<>();
-		Map<String,List<String>> object;
+		Map<String, List<String>> object;
 		while ((object = nextPublication()) != null) {
 			boolean check = false;
-			for(String attValue:object.getOrDefault(conditionAtt,Collections.emptyList())){
-				if(attValue.contains(value)){
+			for (String attValue : object.getOrDefault(conditionAtt, Collections.emptyList())) {
+				if (attValue.contains(value)) {
 					check = true;
 				}
 			}
-			if(check){
-				for(String refValue:object.getOrDefault(ref, Collections.emptyList())){
-					count.put(refValue, count.getOrDefault(refValue, 0)+object.getOrDefault(countAtt, Collections.emptyList()).size());
+			if (check) {
+				for (String refValue : object.getOrDefault(ref, Collections.emptyList())) {
+					count.put(refValue, count.getOrDefault(refValue, 0)
+							+ object.getOrDefault(countAtt, Collections.emptyList()).size());
 				}
 			}
-			
+
 		}
-		Comparator<Entry<String,Integer>> comp = (e1,e2)-> Integer.compare(e1.getValue(), e2.getValue());
-		Comparator<Entry<String,Integer>> comp2 = comp.reversed().thenComparing((e1,e2)->e1.getKey().compareTo(e2.getKey()));
+		Comparator<Entry<String, Integer>> comp = (e1, e2) -> Integer.compare(e1.getValue(), e2.getValue());
+		Comparator<Entry<String, Integer>> comp2 = comp.reversed()
+				.thenComparing((e1, e2) -> e1.getKey().compareTo(e2.getKey()));
 		TreeSet<Entry<String, Integer>> top = new TreeSet<>(comp2);
 		top.addAll(count.entrySet());
 		List<Pair<String, Integer>> result = new ArrayList<>();
@@ -105,28 +117,16 @@ public class App {
 		return result;
 	}
 
-	/*
-	 * private static List<String> getAttributes(JsonObject publication, String
-	 * att) { try { List<String> values = new ArrayList<>(); switch (att) { case
-	 * "author": case "authors": case "name": case "names": for (JsonObject o :
-	 * publication.getJsonArray("authors").getValuesAs(JsonObject.class)) {
-	 * values.add(o.getString("name")); } return values;
-	 * 
-	 * case "ids": for (JsonObject o :
-	 * publication.getJsonArray("authors").getValuesAs(JsonObject.class)) {
-	 * values.add(o.getString("ids")); } return values; case "id":
-	 * values.add(publication.getString("id")); return values; case "title":
-	 * values.add(publication.getString("title")); return values; case "year":
-	 * values.add(publication.getString("year")); return values; case "s2Url":
-	 * values.add(publication.getString("s2Url")); return values; case "venue":
-	 * values.add(publication.getString("venue")); return values;
-	 * 
-	 * default: throw new IllegalArgumentException(
-	 * "this attribute doesn't exist"); } } catch (NullPointerException e) {
-	 * return Collections.emptyList(); } }
-	 */
-	
-	
+	public static <C> void findGeneric(C zero, Combinator<C> comb, Filter filter, Finalizer<C> finalizer) {
+		C val = zero;
+		Map<String, List<String>> object;
+		while ((object = nextPublication()) != null) {
+			if (filter.check(object)) {
+				val = comb.combine(val, object);
+			}
+		}
+		finalizer.out(val);
+	}
 
 	private static Map<String, List<String>> nextPublication() {
 		while (parser.hasNext() && parser.next() != Event.START_OBJECT) {
@@ -177,10 +177,13 @@ public class App {
 								case "ids":
 									int prevSize = ids.size();
 									while (parser.hasNext() && parser.next() != Event.START_ARRAY) {
-									}while (parser.hasNext() && parser.next() != Event.END_ARRAY) {
+									}
+									while (parser.hasNext() && parser.next() != Event.END_ARRAY) {
 										ids.add(parser.getString());
 									}
-									if(ids.size()==prevSize){ ids.add(null);}
+									if (ids.size() == prevSize) {
+										ids.add(null);
+									}
 									break;
 								case "name":
 									parser.next();
