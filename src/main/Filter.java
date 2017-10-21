@@ -23,7 +23,14 @@ public interface Filter {
 		};
 	}
 
+	public static Filter all(){
+		return o->true;
+	}
 	
+	
+	/*
+	 * Modifier
+	 */
 	public default Filter and(Filter f){
 		return o->  check(o) && f.check(o);
 	}

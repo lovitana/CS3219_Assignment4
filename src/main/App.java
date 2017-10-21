@@ -28,12 +28,14 @@ import javax.json.stream.JsonParser.Event;
  * 
  * Q3: count year venue ICSE id
  * 
+ * Q4: graph
+ * 
+ * (will be improved later)
  */
 public class App {
 
 	private static JsonParser parser;
 	private static BufferedReader reader;
-	private static int n = 0;
 
 	public static void main(String[] args) {
 		try (BufferedReader input = new BufferedReader(new FileReader("src/resources/data.json"));) {
@@ -66,6 +68,13 @@ public class App {
 				findGeneric(new HashMap<String, Integer>(), Combinator.count(args[1], args[4]),
 						Filter.contain(args[2], args[3]),
 						Finalizer.printAll().addAtt(Arrays.asList(args[1], "nbPublications")));
+				break;
+			case "graph":
+				findGeneric(new HashMap<>(),
+						Combinator.graph(true,Arrays.asList("title","name")),
+						Filter.all(),
+						Finalizer.graphConstructor(4,"Low-density parity check codes over GF(q)")
+						);
 				break;
 			case "test":
 				List<String> l = new ArrayList<>();
