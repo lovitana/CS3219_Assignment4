@@ -25,7 +25,7 @@ import javax.json.stream.JsonParser.Event;
  * 
  * Q2: top title venue arXiv 5 inCitations
  * 
- * Q3: count year venue ICSE id 
+ * Q3: count year venue ICSE id
  * 
  */
 public class App {
@@ -60,16 +60,16 @@ public class App {
 				}
 				break;
 			case "count":
-				findGeneric(new HashMap<String,Integer>(),
-						Combinator.count(args[1],  args[4]),
-						Filter.contain(args[2],args[3] ),
-						Finalizer.printAll().addAtt(Arrays.asList(args[1],"nbPublications")) );
+				findGeneric(new HashMap<String, Integer>(), Combinator.count(args[1], args[4]),
+						Filter.contain(args[2], args[3]),
+						Finalizer.printAll().addAtt(Arrays.asList(args[1], "nbPublications")));
+				break;
 			case "test":
 				List<String> l = new ArrayList<>();
 				l.add("authors");
 				l.add("nbCit");
-				findGeneric(new HashMap<>(), Combinator.count("title","inCitations"), Filter.contain("venue", "ArXiv")
-						, Finalizer.printTop(10).addAtt(l));
+				findGeneric(new HashMap<>(), Combinator.count("title", "inCitations"), Filter.contain("venue", "ArXiv"),
+						Finalizer.printTop(10).addAtt(l));
 			}
 
 			parser.close();
