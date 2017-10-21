@@ -17,12 +17,7 @@ public class ModifyFile {
 			line=input.readLine();
 			bw.write(line);
 			while((line=input.readLine()) != null){
-				if(!line.isEmpty() && line.charAt(0)=='{'){
 					bw.write(","+line);
-				}else{
-					bw.write(line);
-					System.out.println(line);
-				}
 			}
 			bw.write("]");
 		}catch (FileNotFoundException e) {

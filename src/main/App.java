@@ -1,10 +1,11 @@
 
 package main;
 
-import java.io.FileInputStream;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,10 +32,12 @@ import javax.json.stream.JsonParser.Event;
 public class App {
 
 	private static JsonParser parser;
+	private static BufferedReader reader;
+	private static int n = 0;
 
 	public static void main(String[] args) {
-		try (InputStream input = new FileInputStream("src/resources/dataModified.json")) {
-			parser = Json.createParser(input);
+		try (BufferedReader input = new BufferedReader(new FileReader("src/resources/data.json"));) {
+			reader = input;
 			if (args.length == 0) {
 				throw new IllegalArgumentException("Wrong number of arguments");
 			}
@@ -66,10 +69,16 @@ public class App {
 				break;
 			case "test":
 				List<String> l = new ArrayList<>();
-				l.add("authors");
-				l.add("nbCit");
-				findGeneric(new HashMap<>(), Combinator.count("title", "inCitations"), Filter.contain("venue", "ArXiv"),
-						Finalizer.printTop(10).addAtt(l));
+				l.add("id");
+				l.add("title");
+				findGeneric(new HashMap<String,List<String>>()
+						, (map,o)->{map.put(o.get("id").get(0),o.get("title"));return map;}
+						, Filter.contain("title", "A kernel"),
+						(map)->{
+							for(Entry<String,List<String>> e:map.entrySet()){
+								System.out.println(e);
+							}
+						});
 			}
 
 			parser.close();
@@ -82,12 +91,12 @@ public class App {
 		}
 	}
 
-	public static List<Pair<String, Integer>> findWithMostAttr(String ref, String att, String value, int n) {
+	public static List<Pair<String, Integer>> findWithMostAttr(String ref, String att, String value, int n) throws IOException {
 		return findTop(ref, att, value, "", n);
 	}
 
 	public static List<Pair<String, Integer>> findTop(String ref, String conditionAtt, String value, String countAtt,
-			int n) {
+			int n) throws IOException {
 		Map<String, Integer> count = new HashMap<>();
 		Map<String, List<String>> object;
 		while ((object = nextPublication()) != null) {
@@ -123,7 +132,7 @@ public class App {
 		return result;
 	}
 
-	public static <C> void findGeneric(C zero, Combinator<C> comb, Filter filter, Finalizer<C> finalizer) {
+	public static <C> void findGeneric(C zero, Combinator<C> comb, Filter filter, Finalizer<C> finalizer) throws IOException {
 		C val = zero;
 		Map<String, List<String>> object;
 		while ((object = nextPublication()) != null) {
@@ -134,14 +143,21 @@ public class App {
 		finalizer.out(val);
 	}
 
-	private static Map<String, List<String>> nextPublication() {
+	private static Map<String, List<String>> nextPublication() throws IOException {
+		
+		String line = reader.readLine();
+		
+		if(line == null){
+			return null;
+		}
+		parser =  Json.createParser(new StringReader(line));
 		while (parser.hasNext() && parser.next() != Event.START_OBJECT) {
 		}
 		if (!parser.hasNext()) {
-			return null;
+			return Collections.emptyMap();
 		}
 		Map<String, List<String>> object = new HashMap<>();
-
+		boolean check = false;
 		while (parser.hasNext()) {
 			Event e = parser.next();
 			if (e == Event.KEY_NAME) {
@@ -149,6 +165,7 @@ public class App {
 				switch (att) {
 				case "id":
 				case "title":
+					check=true;
 				case "paperAbstract":
 				case "year":
 				case "s2Url":
@@ -173,11 +190,12 @@ public class App {
 					}
 					List<String> ids = new ArrayList<>();
 					List<String> name = new ArrayList<>();
-					while (parser.hasNext() && parser.next() != Event.END_ARRAY) {
-						while (parser.hasNext() && parser.next() != Event.START_OBJECT) {
+					Event ev;
+					while (parser.hasNext() && (ev =parser.next()) != Event.END_ARRAY) {
+						while (parser.hasNext() && ev != Event.START_OBJECT) {
+							ev = parser.next();
 						}
-						while (parser.hasNext()) {
-							Event ev = parser.next();
+						while (parser.hasNext()&& (ev= parser.next()) != Event.END_OBJECT) {
 							if (ev == Event.KEY_NAME) {
 								switch (parser.getString()) {
 								case "ids":
@@ -196,18 +214,16 @@ public class App {
 									name.add(parser.getString());
 								}
 							}
-							if (ev == Event.END_OBJECT) {
-								break;
-							}
 						}
 					}
 					object.put("ids", ids);
 					object.put("name", name);
 				}
 			}
-			if (e == Event.END_OBJECT) {
-				return object;
-			}
+		}
+		if(!check){
+			System.out.println(line);
+			System.out.println(object);
 		}
 		return object;
 
