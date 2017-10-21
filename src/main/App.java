@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,6 +25,7 @@ import javax.json.stream.JsonParser.Event;
  * 
  * Q2: top title venue arXiv 5 inCitations
  * 
+ * Q3: count year venue ICSE id 
  * 
  */
 public class App {
@@ -58,6 +59,11 @@ public class App {
 					}
 				}
 				break;
+			case "count":
+				findGeneric(new HashMap<String,Integer>(),
+						Combinator.count(args[1],  args[4]),
+						Filter.contain(args[2],args[3] ),
+						Finalizer.printAll().addAtt(Arrays.asList(args[1],"nbPublications")) );
 			case "test":
 				List<String> l = new ArrayList<>();
 				l.add("authors");
