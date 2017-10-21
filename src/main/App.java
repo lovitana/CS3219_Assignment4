@@ -92,7 +92,7 @@ public class App {
 	}
 
 	public static List<Pair<String, Integer>> findWithMostAttr(String ref, String att, String value, int n) throws IOException {
-		return findTop(ref, att, value, "", n);
+		return findTop(ref, att, value, "id", n);
 	}
 
 	public static List<Pair<String, Integer>> findTop(String ref, String conditionAtt, String value, String countAtt,
@@ -157,7 +157,6 @@ public class App {
 			return Collections.emptyMap();
 		}
 		Map<String, List<String>> object = new HashMap<>();
-		boolean check = false;
 		while (parser.hasNext()) {
 			Event e = parser.next();
 			if (e == Event.KEY_NAME) {
@@ -165,7 +164,6 @@ public class App {
 				switch (att) {
 				case "id":
 				case "title":
-					check=true;
 				case "paperAbstract":
 				case "year":
 				case "s2Url":
@@ -220,10 +218,6 @@ public class App {
 					object.put("name", name);
 				}
 			}
-		}
-		if(!check){
-			System.out.println(line);
-			System.out.println(object);
 		}
 		return object;
 
