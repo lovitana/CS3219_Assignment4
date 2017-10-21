@@ -33,10 +33,7 @@ public interface Finalizer<T> {
 
 	public static Finalizer<Map<String, Integer>> printAll() {
 		return count -> {
-			Comparator<Entry<String, Integer>> comp = (e1, e2) -> Integer.compare(e1.getValue(), e2.getValue());
-			Comparator<Entry<String, Integer>> comp2 = comp.reversed()
-					.thenComparing((e1, e2) -> e1.getKey().compareTo(e2.getKey()));
-			TreeSet<Entry<String, Integer>> top = new TreeSet<>(comp2);
+			TreeSet<Entry<String, Integer>> top = new TreeSet<>((e1, e2) -> e1.getKey().compareTo(e2.getKey()));
 			top.addAll(count.entrySet());
 			for (Entry<String, Integer> ent : top) {
 				System.out.println(ent.getKey() + "," + ent.getValue());
