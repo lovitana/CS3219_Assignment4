@@ -63,7 +63,14 @@
 
       svg.append("g")
       .attr("class", "y axis")
-      .call(yAxis);
+      .call(yAxis)
+      .append("text")
+      .attr("fill", "#000")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 5)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .text("Number of Publications");
 
       svg.selectAll(".bar")
       .data(data)
