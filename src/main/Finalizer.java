@@ -87,28 +87,34 @@ public interface Finalizer<T> {
 			System.out.println("title,targets,authors");
 			for(Entry<String,List<String>> e:graph.entrySet()){
 				StringBuilder output = new StringBuilder();
-				output.append(map.get(e.getKey()).el1.get("title").get(0).replace(',',' '));
-				output.append(",\"");
-				boolean start = false;
+				String src = map.get(e.getKey()).el1.get("title").get(0).replace(',',' ');
 				for(String id: e.getValue()){
-					if(start){
-						output.append(',');
-					}
-					start = true;
+					output.append(src);
+					output.append(',');	
 					output.append(map.get(id).el1.get("title").get(0).replace(',',' '));
-					
-				}
-				output.append("\",\"");
-				start = false;
-				for(String author:map.get(e.getKey()).el1.get("name")){
-					if(start){
-						output.append(',');
+					boolean start = false;
+					output.append(",\"");
+					for(String author:map.get(e.getKey()).el1.get("name")){
+						if(start){
+							output.append(',');
+						}
+						start = true;
+						output.append(author.replace(',',' '));
 					}
-					start = true;
-					output.append(author.replace(',',' '));
+					output.append("\"");
+					start = false;
+					output.append(",\"");
+					for(String author:map.get(id).el1.get("name")){
+						if(start){
+							output.append(',');
+						}
+						start = true;
+						output.append(author.replace(',',' '));
+					}
+					output.append("\"");
+					System.out.println(output.toString());
+					output = new StringBuilder();
 				}
-				output.append("\"");
-				System.out.println(output.toString());
 			}
 		};
 	}
@@ -154,7 +160,7 @@ public interface Finalizer<T> {
 				for(String id: e.getValue()){
 					output.append(src);
 					output.append(',');	
-					output.append(map.get(e.getKey()).el1.get("title").get(0).replace(',',' '));
+					output.append(map.get(id).el1.get("title").get(0).replace(',',' '));
 					System.out.println(output.toString());
 					output = new StringBuilder();
 				}
