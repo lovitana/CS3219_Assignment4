@@ -54,6 +54,12 @@ public interface Finalizer<T> {
 			}
 		};
 	}
+
+	public static Finalizer<Map<String, Set<String>>> printAll2() {
+		return count -> {
+			Finalizer.printTopDiff(count.entrySet().size()).out(count);
+		};
+	}
 	
 	public static <T>Finalizer<T>doNothing(){
 		return o->{};

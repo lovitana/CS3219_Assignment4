@@ -255,4 +255,51 @@ public class App {
 		return object;
 
 	}
+	
+	
+	public static <T> void executeCommand(String[] args,int i,T zero, Filter f,Combinator<T> c, Finalizer<T> fin) throws IOException{
+		if(args.length<=i){
+			findGeneric(zero, c, f, fin);
+		}
+		String current = args[i].toLowerCase();
+		switch(current){
+		case "count":
+			if(args[i+1].equals("diff")){
+				i++;
+				executeCommand( args, i+4, new HashMap<String,Set<String>>(),f,Combinator.countDiff(args[i+3], args[i+1]) , Finalizer.printAll2());
+				
+			}else{
+				if(args.length > i+3 && args[i+2].toLowerCase().equals("for")){
+					Finalizer<Map<String,Integer>> finalizer = (args.length>i+5 && args[i+5].toLowerCase().equals("top"))?Finalizer.printTop(Integer.parseInt(args[i+5])): Finalizer.printAll();
+					executeCommand( args, i+4, new HashMap<String,Integer>(),f,Combinator.count(args[i+3], args[i+1]) , finalizer);
+				}else{
+					Finalizer<Map<String,Integer>> finalizer = (args.length>i+3 && args[i+5].toLowerCase().equals("top"))?Finalizer.printTop(Integer.parseInt(args[i+3])): Finalizer.printAll();
+					executeCommand(args, i+2, new HashMap<String,Integer>(),f,Combinator.count(args[i+1], "id") ,finalizer);
+				}
+			}
+			break;
+		case "where":
+		case "and":
+			String cond = args[i+1];
+			if(cond.contains("=")){
+				String[] s = cond.split("=");
+				executeCommand(args,i+2,zero, f.and(Filter.contain(s[0], s[1])), c, fin);
+			}
+		break;
+		case "or":
+			String cond2 = args[i+1];
+			if(cond2.contains("=")){
+				String[] s = cond2.split("=");
+				executeCommand(args,i+2,zero, f.or(Filter.contain(s[0], s[1])), c, fin);
+			}
+			break;
+		}
+			/*
+		case "top":
+			if(){
+				
+			}
+		*/
+		
+	}
 }
