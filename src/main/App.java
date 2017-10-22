@@ -79,7 +79,21 @@ public class App {
 				findGeneric(new HashMap<>(),
 						Combinator.graph(true,Arrays.asList("title","name")),
 						Filter.all(),
+						Finalizer.graphConstructor(4,"Low-density parity check codes over GF(q)")
+						);
+				break;
+			case "edges":
+				findGeneric(new HashMap<>(),
+						Combinator.graph(true,Arrays.asList("title","name")),
+						Filter.all(),
 						Finalizer.graphConstructorEdges(4,"Low-density parity check codes over GF(q)")
+						);
+				break;
+			case "nodes":
+				findGeneric(new HashMap<>(),
+						Combinator.graph(true,Arrays.asList("title","name")),
+						Filter.all(),
+						Finalizer.graphConstructorNodes(4,"Low-density parity check codes over GF(q)")
 						);
 				break;
 			case "test":
