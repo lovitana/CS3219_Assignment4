@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.json.Json;
@@ -21,8 +22,8 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 /**
- * ARGS Q1: top name venue arXiv 10 findWithMostAttr("name", "venue", "arXiv",
- * 10);
+ * ARGS Q1: top name venue arXiv 10 
+ * findWithMostAttr("name", "venue", "arXiv",10);
  * 
  * Q2: top title venue arXiv 5 inCitations
  * 
@@ -30,12 +31,10 @@ import javax.json.stream.JsonParser.Event;
  * 
  * Q4: graph
  * the result is:
- * 
- * nodeSource, target1, target2, ...
- * author1,author2,...
- * nodeSource,...
- * author...
- * ...
+ *
+ * Q5: countDiff name name 50
+ * represent the number of relations for the 10 authors with the biggest number of relations
+ * Q6
  * (will be improved later)
  */
 public class App {
@@ -74,6 +73,11 @@ public class App {
 				findGeneric(new HashMap<String, Integer>(), Combinator.count(args[1], args[4]),
 						Filter.contain(args[2], args[3]),
 						Finalizer.printAll().addAtt(Arrays.asList(args[1], "nbPublications")));
+				break;
+			case "countDiff":
+				findGeneric(new HashMap<String, Set<String>>(), Combinator.countDiff(args[1], args[2]),
+						Filter.all(),
+						Finalizer.printTopDiff(Integer.parseInt(args[3])).addAtt(Arrays.asList(args[1], "nb"+args[2])));
 				break;
 			case "graph":
 				findGeneric(new HashMap<>(),

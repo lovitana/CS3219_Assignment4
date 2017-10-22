@@ -2,8 +2,10 @@ package main;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface Combinator<T> {
 
@@ -14,6 +16,16 @@ public interface Combinator<T> {
 			for (String refValue : object.getOrDefault(ref, Collections.emptyList())) {
 				map.put(refValue,
 						map.getOrDefault(refValue, 0) + object.getOrDefault(countAtt, Collections.emptyList()).size());
+			}
+			return map;
+		};
+	}
+	public static Combinator<Map<String, Set<String>>> countDiff(String ref, String countAtt) {
+		return (map, object) -> {
+			for (String refValue : object.getOrDefault(ref, Collections.emptyList())) {
+				Set<String> newVal = map.getOrDefault(refValue, new HashSet<>());
+				newVal.addAll(object.getOrDefault(countAtt, Collections.emptyList()));
+				map.put(refValue,newVal);
 			}
 			return map;
 		};

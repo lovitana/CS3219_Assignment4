@@ -18,6 +18,15 @@ public interface Finalizer<T> {
 	/*
 	 * PRECONSTRUCTED INTERFACE
 	 */
+	public static Finalizer<Map<String, Set<String>>> printTopDiff(int n) {
+		return group -> {
+			Map<String,Integer> count = new HashMap<>();
+			for(Entry<String,Set<String>> e:group.entrySet()){
+				count.put(e.getKey(), e.getValue().size());
+			}
+			Finalizer.printTop(n).out(count);
+		};
+	}
 	public static Finalizer<Map<String, Integer>> printTop(int n) {
 		return count -> {
 			Comparator<Entry<String, Integer>> comp = (e1, e2) -> Integer.compare(e1.getValue(), e2.getValue());
