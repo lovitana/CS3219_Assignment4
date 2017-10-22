@@ -65,14 +65,14 @@ d3.csv("data5.csv", function(d) {
   node.append("text")
       .attr("clip-path", function(d) { return "url(#clip-" + d.id + ")"; })
     .selectAll("tspan")
-    .data(function(d) { return d.class.split(/(?=[A-Z][^A-Z])/g); })
+    .data(function(d) { return d.class.split(' '); })
     .enter().append("tspan")
       .attr("x", 0)
       .attr("y", function(d, i, nodes) { return 13 + (i - nodes.length / 2 - 0.5) * 10; })
       .text(function(d) { return d; });
 
   node.append("title")
-      .text(function(d) { return d.id + "\n" + format(d.value); });
+      .text(function(d) { return "Venue :"+d.id + "\nNumber of Paper :" + format(d.value); });
 });
 
 </script>
