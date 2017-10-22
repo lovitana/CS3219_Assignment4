@@ -84,21 +84,30 @@ public interface Finalizer<T> {
 				last = next;
 				next = new HashSet<>();
 			}
+			System.out.println("title,targets,authors");
 			for(Entry<String,List<String>> e:graph.entrySet()){
 				StringBuilder output = new StringBuilder();
-				output.append(map.get(e.getKey()).el1.get("title").get(0));
+				output.append(map.get(e.getKey()).el1.get("title").get(0).replace(',',' '));
+				output.append(",\"");
+				boolean start = false;
 				for(String id: e.getValue()){
-					output.append(',');
-					output.append(map.get(id).el1.get("title").get(0));
-				}
-				System.out.println(output.toString());
-				output = new StringBuilder();
-				for(String author:map.get(e.getKey()).el1.get("name")){
-					if(output.length() != 0){
+					if(start){
 						output.append(',');
 					}
-					output.append(author);
+					start = true;
+					output.append(map.get(id).el1.get("title").get(0).replace(',',' '));
+					
 				}
+				output.append("\",\"");
+				start = false;
+				for(String author:map.get(e.getKey()).el1.get("name")){
+					if(start){
+						output.append(',');
+					}
+					start = true;
+					output.append(author.replace(',',' '));
+				}
+				output.append("\"");
 				System.out.println(output.toString());
 			}
 		};
