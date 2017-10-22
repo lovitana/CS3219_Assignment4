@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Visualization 4</title>
+  <link rel="stylesheet" href="v4.css">
+</head>
+
+<body>
+  <script src="d3.v3.min.js"></script>
+  <script>
+    d3.csv("data4.csv", function(error, links) {
+      var width = 960,
+      height = 500;
+
+      var svg = d3.select("body").append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+      svg.append("text")
+      .attr("class", "title")
+      .attr("x", 470)
+      .attr("y", 120)
+      .text("Citation Web");
+
+      var force = d3.layout.force()
+      .size([width, height]);
+
+      if (error) throw error;
+
+      var nodesByName = {};
+
+      // Define the div for the tooltip
+      var div = d3.select("body").append("div") 
+      .attr("class", "tooltip")       
+      .style("opacity", 0);
+
+  // Create nodes for each unique source and target.
+  links.forEach(function(link) {
+    link.source = nodeByName(link.source, link.authorSource, "source");
+    link.target = nodeByName(link.target, link.authorTarget, "target");
+  });
+
+  // Extract the array of nodes from the map by name.
+  var nodes = d3.values(nodesByName);
+
+
+// build the arrow.
+svg.append("svg:defs").selectAll("marker")
+    .data(["end"])      // Different link/path types can be defined here
+  .enter().append("svg:marker")    // This section adds in the arrows
+  .attr("id", String)
+  .attr("viewBox", "0 -5 10 10")
+  .attr("refX", 19.1)
+  .attr("refY", -0.4)
+  .attr("markerWidth", 5)
+  .attr("markerHeight", 5)
+  .attr("orient", "auto")
+  .append("svg:path")
+  .attr("d", "M0,-5L10,0L0,5");
+
+  // Create the link lines.
+  var link = svg.selectAll(".link")
+  .data(links)
+  .enter().append("line")
+  .attr("class", "link")
+  .attr("marker-end", "url(#end)");
+
+  // Create the node circles.
+  var node = svg.selectAll(".node")
+  .data(nodes)
+  .enter().append("circle")
+  .attr("class", "node")
+  .attr("r", 4.5)
+  .style("fill", function(d) { return (d.type == "source") ? '#99ff33' : '#ff3399' ;})
+  .on("mouseover", function(d) {    
+    div.transition()      
+    .style("opacity", .8);    
+    div.html("Title: " + "<span style='color:yellow'>" + d.name + "</span>" + "<br/>"  + "Author(s): " + "<span style='color:yellow'>" + d.author) 
+    .style("left", (d3.event.pageX) + 20 + "px")    
+    .style("top", (d3.event.pageY - 10) + "px");  
+  })          
+  .on("mouseout", function(d) {   
+    div.transition()      
+    .style("opacity", 0); 
+  })
+  .call(force.drag);
+
+  // Start the force layout.
+  force
+  .nodes(nodes)
+  .links(links)
+  .on("tick", tick)
+  .start();
+
+  function tick() {
+    link.attr("x1", function(d) { return d.source.x; })
+    .attr("y1", function(d) { return d.source.y; })
+    .attr("x2", function(d) { return d.target.x; })
+    .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("cx", function(d) { return d.x; })
+    .attr("cy", function(d) { return d.y; });
+  }
+
+  function nodeByName(name, author, type) {
+    return nodesByName[name] || (nodesByName[name] = {name: name, author: author, type: type});
+  }
+
+});
+</script>
+</body>
+</html>
