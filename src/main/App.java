@@ -22,6 +22,23 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 /**
+ * API:
+ * 
+ * count [diff] [attribute_name] (for [attribute]) (top [n]) (where [condition] and/or [condition2])
+ * 
+ * 		count: count the number of occurrences for the following attribute
+ * 		diff : does not count duplicate 
+ * 		for: compare the count for each value of the following attribute
+ * 				Example: count diff year for name
+ * 						will print the number of year each author appear.
+ * 		top: will select only the n better count from the list
+ * 		where condition : ex: venue=ArXiv
+ * 
+ * graph ["root title"] [n] (-r) (where [condition]):
+ * 		will construct a graph from the root with a deep of n.
+ * 		-r if you wnt it reversed (means that it follow the outCitations instead
+ * 			
+ * 
  * ARGS Q1: count name top 10 where venue=ArXiv
  * 
  * Q2: count inCitations for title top 5 where venue=ArXiv
