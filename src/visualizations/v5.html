@@ -50,7 +50,7 @@ d3.csv("data5.csv", function(d) {
     .attr("class", "title")
     .attr("x", 500)
     .attr("y", 20)
-    .text("Top 99 Venue based on the number of Paper");
+    .text("Top 99 Venue based on the number of Paper published after 2000");
     
   node.append("circle")
       .attr("id", function(d) { return d.id; })

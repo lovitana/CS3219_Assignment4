@@ -22,19 +22,16 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 /**
- * ARGS Q1: top name venue arXiv 10 
- * findWithMostAttr("name", "venue", "arXiv",10);
+ * ARGS Q1: count name top 10 where venue=ArXiv
  * 
- * Q2: top title venue arXiv 5 inCitations
+ * Q2: count inCitations for title top 5 where venue=ArXiv
+ * top title venue arXiv 5 inCitations
  * 
- * Q3: count year venue ICSE id
+ * Q3: count id for year where venue=ICSE
  * 
- * Q4: graph
- * the result is:
+ * Q4: graph "Low-density parity check codes over GF(q)" 2
  *
- * Q5: countDiff name name 50
- * represent the number of relations for the 10 authors with the biggest number of relations
- * Q6
+ * Q6: count venue top 100 where year=20
  * (will be improved later)
  */
 public class App {
@@ -48,6 +45,9 @@ public class App {
 			if (args.length == 0) {
 				throw new IllegalArgumentException("Wrong number of arguments");
 			}
+			
+			executeCommand(args, 0, null, Filter.all(), null, null);
+			/*
 			// TODO switch arg[0] to call the right function with arguments
 			// arg[1..n] (and maybe a file.csv)
 			switch (args[0]) {
@@ -112,7 +112,7 @@ public class App {
 								System.out.println(e);
 							}
 						});
-			}
+			}*/
 
 			parser.close();
 		} catch (FileNotFoundException e) {
@@ -260,20 +260,25 @@ public class App {
 	public static <T> void executeCommand(String[] args,int i,T zero, Filter f,Combinator<T> c, Finalizer<T> fin) throws IOException{
 		if(args.length<=i){
 			findGeneric(zero, c, f, fin);
+			return;
 		}
 		String current = args[i].toLowerCase();
 		switch(current){
 		case "count":
 			if(args[i+1].equals("diff")){
 				i++;
-				executeCommand( args, i+4, new HashMap<String,Set<String>>(),f,Combinator.countDiff(args[i+3], args[i+1]) , Finalizer.printAll2());
+				Finalizer<Map<String,Set<String>>> finalizer = (args.length>i+5 && args[i+4].toLowerCase().equals("top"))?Finalizer.printTopDiff(Integer.parseInt(args[i+5])): Finalizer.printAll2();
+				finalizer = finalizer.addAtt(Arrays.asList(args[i+3],"count"));
+				executeCommand( args, i+4, new HashMap<String,Set<String>>(),f,Combinator.countDiff(args[i+3], args[i+1]) , finalizer);
 				
 			}else{
 				if(args.length > i+3 && args[i+2].toLowerCase().equals("for")){
-					Finalizer<Map<String,Integer>> finalizer = (args.length>i+5 && args[i+5].toLowerCase().equals("top"))?Finalizer.printTop(Integer.parseInt(args[i+5])): Finalizer.printAll();
+					Finalizer<Map<String,Integer>> finalizer = (args.length>i+5 && args[i+4].toLowerCase().equals("top"))?Finalizer.printTop(Integer.parseInt(args[i+5])): Finalizer.printAll();
+					finalizer = finalizer.addAtt(Arrays.asList(args[i+3],"count"));
 					executeCommand( args, i+4, new HashMap<String,Integer>(),f,Combinator.count(args[i+3], args[i+1]) , finalizer);
 				}else{
-					Finalizer<Map<String,Integer>> finalizer = (args.length>i+3 && args[i+5].toLowerCase().equals("top"))?Finalizer.printTop(Integer.parseInt(args[i+3])): Finalizer.printAll();
+					Finalizer<Map<String,Integer>> finalizer = (args.length>i+3 && args[i+2].toLowerCase().equals("top"))?Finalizer.printTop(Integer.parseInt(args[i+3])): Finalizer.printAll();
+					finalizer = finalizer.addAtt(Arrays.asList(args[i+1],"count"));
 					executeCommand(args, i+2, new HashMap<String,Integer>(),f,Combinator.count(args[i+1], "id") ,finalizer);
 				}
 			}
@@ -293,13 +298,26 @@ public class App {
 				executeCommand(args,i+2,zero, f.or(Filter.contain(s[0], s[1])), c, fin);
 			}
 			break;
-		}
-			/*
-		case "top":
-			if(){
-				
+
+		case "graph":
+			String root = args[i+1];
+			int deep =Integer.parseInt(args[i+2]);
+			if(args.length>i+3 && (args[i+3].equals("-r") || args[i+3].equals("-outcitations"))){
+				executeCommand(args, i+4, new HashMap<String,Pair<Map<String,List<String>>,List<String>>>(),
+						Filter.all(),
+						Combinator.graph(false,Arrays.asList("title","name")),
+						Finalizer.graphConstructor(deep,root));
+			}else{
+				executeCommand(args, i+3, new HashMap<String,Pair<Map<String,List<String>>,List<String>>>(),
+						Filter.all(),
+						Combinator.graph(true,Arrays.asList("title","name")),
+						Finalizer.graphConstructor(deep,root));
 			}
-		*/
+			break;
+			default:
+				executeCommand(args, i+1, zero, f, c, fin);
+		}
 		
 	}
+
 }
